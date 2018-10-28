@@ -1,0 +1,45 @@
+<resources>
+
+    <string name="app_name">Inventory</string>
+
+    <!-- Inventory Layout strings -->
+    <string name="inventory_activity_empty_storage">Inventory is Empty</string>
+    <string name="inventory_activity_add_supply">Go on add supplies</string>
+
+    <!-- Items List Layout strings -->
+    <string name="item_list_name">Name :</string>
+    <string name="item_list_quantity">Quantity :</string>
+    <string name="item_list_quntity_unit">kg/unit</string>
+    <string name="item_list_price">Price :</string>
+    <string name="item_list_price_unit">$</string>
+
+    <!-- Editor Layout strings-->
+    <string name="editor_layout_overview">Overview</string>
+    <string name="editor_layout_quantity">Quantity</string>
+    <string name="editor_layout_add_name">Supply Name</string>
+    <string name="editor_layout_add_quantity">Supply Quantity</string>
+    <string name="editor_layout_add_price">Supply one Unit Price</string>
+
+
+    <!-- Editor Activity strings -->
+    <string name="editor_activity_title_add_new_unit">Add Supply</string>
+    <string name="editor_activity_title_edit_unit">Edit Supply</string>
+    <string name="editor_activity_toaste_plz_add_all">Please add all data</string>
+    <!-- Toaste Messages on Add, Delete and Update -->
+    <string name="editor_insert_unit_failed">Unit Adding Failed</string>
+    <string name="editor_insert_unit_successful">Added Successfully</string>
+    <string name="editor_update_unit_failed">Unit Update Failed</string>
+    <string name="editor_update_unit_successful">Updated Successfully</string>
+    <string name="editor_delete_unit_successful">Supply deleted</string>
+    <string name="editor_delete_unit_failed">Deleting Failed</string>
+
+    <!-- Dialogue Box Messages and Buttons -->
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep Editing</string>
+
+    <string name="delete_dialog_msg">Delete this unitt?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+
+</resources>
