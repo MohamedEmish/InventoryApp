@@ -7,6 +7,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,9 +17,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.amosh.inventoryapp.data.UnitContract.UnitEntry;
+import com.example.amosh.inventoryapp.data.UnitDbHelper;
+import com.example.amosh.inventoryapp.data.UnitProvider;
+import com.example.amosh.inventoryapp.EditorActivity;
+
+
 
 public class InventoryActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -60,17 +69,17 @@ public class InventoryActivity extends AppCompatActivity implements
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Create new intent to go to {@link EditorActivity}
-                Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
+                final Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
 
                 // Form the content URI that represents the specific unit that was clicked on,
                 // by appending the "id" (passed as input to this method) onto the
                 // {@link unitEntry#CONTENT_URI}.
                 // For example, the URI would be "content://com.example.amosh.inventoryapp/units/2"
                 // if the unit with ID 2 was clicked on.
-                Uri currentunitUri = ContentUris.withAppendedId(UnitEntry.CONTENT_URI, id);
+                final Uri currentUnitUri = ContentUris.withAppendedId(UnitEntry.CONTENT_URI, id);
 
                 // Set the URI on the data field of the intent
-                intent.setData(currentunitUri);
+                intent.setData(currentUnitUri);
 
                 // Launch the {@link EditorActivity} to display the data for the current unit.
                 startActivity(intent);

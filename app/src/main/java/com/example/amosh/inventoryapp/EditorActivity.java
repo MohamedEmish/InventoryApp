@@ -51,7 +51,7 @@ public class EditorActivity extends AppCompatActivity implements
     /**
      * EditText field to enter the unit's weight
      */
-    private EditText mPriceText;
+    private EditText mPriceEditText;
 
     /**
      * Boolean flag that keeps track of whether the unit has been edited (true) or not (false)
@@ -103,14 +103,14 @@ public class EditorActivity extends AppCompatActivity implements
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_supply_name);
         mQuantityEditText = (EditText) findViewById(R.id.edit_supply_quntity);
-        mPriceText = (EditText) findViewById(R.id.edit_supply_price);
+        mPriceEditText = (EditText) findViewById(R.id.edit_supply_price);
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
         // or not, if the user tries to leave the editor without saving.
         mNameEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
-        mPriceText.setOnTouchListener(mTouchListener);
+        mPriceEditText.setOnTouchListener(mTouchListener);
 
     }
 
@@ -122,7 +122,7 @@ public class EditorActivity extends AppCompatActivity implements
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
-        String priceString = mPriceText.getText().toString().trim();
+        String priceString = mPriceEditText.getText().toString().trim();
 
 
         // Check if this is supposed to be a new unit
@@ -208,11 +208,20 @@ public class EditorActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
+                String name = mNameEditText.getText().toString().trim();
+                String price = mPriceEditText.getText().toString().trim();
+                String quantity = mQuantityEditText.getText().toString().trim();
+                if (TextUtils.isEmpty(name) || TextUtils.isEmpty(quantity) || TextUtils.isEmpty(price)) {
+                    Toast.makeText(this, R.string.editor_activity_toaste_plz_add_all, Toast.LENGTH_SHORT).show();
+                    break;
+                } else {
                     // Save unit to database
                     saveUnit();
                     // Exit activity
                     finish();
-                return true;
+
+                    return true;
+                }
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
                 // Pop up confirmation dialog for deletion
@@ -314,7 +323,7 @@ public class EditorActivity extends AppCompatActivity implements
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mQuantityEditText.setText(Integer.toString(quantity));
-            mPriceText.setText(Double.toString(price));
+            mPriceEditText.setText(Double.toString(price));
 
         }
     }
@@ -324,7 +333,7 @@ public class EditorActivity extends AppCompatActivity implements
         // If the loader is invalidated, clear out all the data from the input fields.
         mNameEditText.setText("");
         mQuantityEditText.setText("");
-        mPriceText.setText("");
+        mPriceEditText.setText("");
     }
 
     /**

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.amosh.inventoryapp.data.UnitContract.UnitEntry;
@@ -55,12 +56,12 @@ public class UnitCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, Context context, final Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
         TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
         TextView priceTextView = (TextView) view.findViewById(R.id.price);
-
+        ImageView cartImageView = (ImageView) view.findViewById(R.id.buy_one);
 
         // Find the columns of unit attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_NAME);

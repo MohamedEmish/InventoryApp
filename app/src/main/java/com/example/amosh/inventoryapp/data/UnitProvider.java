@@ -142,20 +142,20 @@ public class UnitProvider extends ContentProvider {
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
         //Check that the name is not null
         String name = values.getAsString(UnitEntry.COLUMN_UNIT_NAME);
-        if (name == null || name.isEmpty()) {
+        if (name != null && name.isEmpty()) {
             throw new IllegalArgumentException("supply requires a name");
         }
         
         //Check the Quantity is not null
         Integer quantity = values.getAsInteger(UnitEntry.COLUMN_UNIT_QUANTITY);
-        if (quantity == null || quantity < 0) {
+        if (quantity != null && quantity < 0) {
             throw new IllegalArgumentException("supply requires valid quantity");
 
         }
 
         //Check the Quantity is not null
         Float price = values.getAsFloat(UnitEntry.COLUMN_UNIT_PRICE);
-        if (price == null || price < 0) {
+        if (price != null && price < 0) {
             throw new IllegalArgumentException("please add valid unit price");
         }
 
