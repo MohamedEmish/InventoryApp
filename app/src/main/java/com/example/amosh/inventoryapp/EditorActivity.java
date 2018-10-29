@@ -142,7 +142,7 @@ public class EditorActivity extends AppCompatActivity implements
         values.put(UnitEntry.COLUMN_UNIT_QUANTITY, quantityString);
         values.put(UnitEntry.COLUMN_UNIT_PRICE, priceString);
 
-        
+
         /// Determine if this is a new or existing unit by checking if mCurrentUnitUri is null or not
         if (mCurrentUnitUri == null) {
             // This is a NEW unit, so insert a new unit into the provider,
