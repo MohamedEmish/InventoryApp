@@ -145,7 +145,12 @@ public class UnitProvider extends ContentProvider {
         if (name != null && name.isEmpty()) {
             throw new IllegalArgumentException("supply requires a name");
         }
-        
+
+        //Check that the imageUri is not null
+        String imageUri = values.getAsString(UnitEntry.COLUMN_UNIT_IMAGE_URI);
+        if (imageUri != null && imageUri.isEmpty()) {
+            throw new IllegalArgumentException("supply requires an image");
+        }
         //Check the Quantity is not null
         Integer quantity = values.getAsInteger(UnitEntry.COLUMN_UNIT_QUANTITY);
         if (quantity != null && quantity < 0) {
@@ -236,6 +241,15 @@ public class UnitProvider extends ContentProvider {
             String name = values.getAsString(UnitEntry.COLUMN_UNIT_NAME);
             if (name == null) {
                 throw new IllegalArgumentException("unit requires a name");
+            }
+        }
+
+        // If the {@link unitEntry#COLUMN_UNIT_IMAGE_URI} key is present,
+        // check that the name value is not null.
+        if (values.containsKey(UnitEntry.COLUMN_UNIT_IMAGE_URI)) {
+            String imageUri = values.getAsString(UnitEntry.COLUMN_UNIT_IMAGE_URI);
+            if (imageUri == null) {
+                throw new IllegalArgumentException("unit requires an image");
             }
         }
 

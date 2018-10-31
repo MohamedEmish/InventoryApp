@@ -1,7 +1,10 @@
 package com.example.amosh.inventoryapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +12,12 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.amosh.inventoryapp.data.UnitContract.UnitEntry;
+import com.example.amosh.inventoryapp.data.UnitDbHelper;
+import com.example.amosh.inventoryapp.data.UnitProvider;
+import com.squareup.picasso.Picasso;
 
 
 /**
@@ -18,6 +25,7 @@ import com.example.amosh.inventoryapp.data.UnitContract.UnitEntry;
  * that uses a {@link Cursor} of unit data as its data source. This adapter knows
  * how to create list items for each row of unit data in the {@link Cursor}.
  */
+
 public class UnitCursorAdapter extends CursorAdapter {
 
     /**
@@ -56,27 +64,44 @@ public class UnitCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, Context context, final Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
+
         // Find individual views that we want to modify in the list item layout
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
         TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
         TextView priceTextView = (TextView) view.findViewById(R.id.price);
         ImageView cartImageView = (ImageView) view.findViewById(R.id.buy_one);
+        ImageView unitImageView = (ImageView) view.findViewById(R.id.unit_image_view);
 
         // Find the columns of unit attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_NAME);
         int quantityColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_QUANTITY);
         int priceColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_PRICE);
+        final long idCoulmnIndex = cursor.getColumnIndex(UnitEntry._ID);
+        int imageColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_IMAGE_URI);
 
         // Read the unit attributes from the Cursor for the current unit
         String unitName = cursor.getString(nameColumnIndex);
-        String unitQuantity = cursor.getString(quantityColumnIndex);
+        final String unitQuantity = cursor.getString(quantityColumnIndex);
         String unitPrice = cursor.getString(priceColumnIndex);
-
+        String imageUriString = cursor.getString(imageColumnIndex);
 
         // Update the TextViews with the attributes for the current unit
         nameTextView.setText(unitName);
         quantityTextView.setText(unitQuantity);
         priceTextView.setText(unitPrice);
+
+        Uri imageUri = Uri.parse(imageUriString);
+        Picasso.with(context).load(imageUri).into(unitImageView);
+        unitImageView.setImageURI(imageUri);
+
+
+        cartImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InventoryActivity inventoryActivity = (InventoryActivity) context;
+                inventoryActivity.buyOne(idCoulmnIndex, Integer.valueOf(unitQuantity));
+            }
+        });
     }
 }

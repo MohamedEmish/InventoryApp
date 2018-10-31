@@ -73,6 +73,11 @@ public class UnitContract {
         public final static String COLUMN_UNIT_QUANTITY = "quantity";
 
         /**
+         * Unit Image Uri
+         * Type: String
+         */
+        public final static String COLUMN_UNIT_IMAGE_URI = "image_uri";
+        /**
          * The MIME type of the {@link #CONTENT_URI} for a list of pets.
          */
         public static final String CONTENT_LIST_TYPE =

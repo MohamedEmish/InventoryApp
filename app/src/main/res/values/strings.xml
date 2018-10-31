@@ -19,6 +19,8 @@
     <string name="editor_layout_add_name">Supply Name</string>
     <string name="editor_layout_add_quantity">Supply Quantity</string>
     <string name="editor_layout_add_price">Supply one Unit Price</string>
+    <string name="editor_layout_image_label">Image</string>
+    <string name="editor_layout_image_upload_button">Add Image</string>
 
 
     <!-- Editor Activity strings -->

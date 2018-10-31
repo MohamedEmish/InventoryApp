@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.amosh.inventoryapp.data.UnitContract;
 import com.example.amosh.inventoryapp.data.UnitContract.UnitEntry;
 import com.example.amosh.inventoryapp.data.UnitDbHelper;
 import com.example.amosh.inventoryapp.data.UnitProvider;
@@ -37,6 +38,7 @@ public class InventoryActivity extends AppCompatActivity implements
 
     /** Adapter for the ListView */
     UnitCursorAdapter mCursorAdapter;
+    UnitDbHelper mDbHelper;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +101,7 @@ public class InventoryActivity extends AppCompatActivity implements
         values.put(UnitEntry.COLUMN_UNIT_NAME, "Cheese");
         values.put(UnitEntry.COLUMN_UNIT_QUANTITY, 5);
         values.put(UnitEntry.COLUMN_UNIT_PRICE, 7);
+        values.put(UnitEntry.COLUMN_UNIT_IMAGE_URI, R.drawable.shopping_empty_box_icon);
 
         // Insert a new row for Cheese into the provider using the ContentResolver.
         // Use the {@link UnitEntry#CONTENT_URI} to indicate that we want to insert
@@ -146,7 +149,8 @@ public class InventoryActivity extends AppCompatActivity implements
                 UnitEntry._ID,
                 UnitEntry.COLUMN_UNIT_NAME,
                 UnitEntry.COLUMN_UNIT_QUANTITY,
-                UnitEntry.COLUMN_UNIT_PRICE};
+                UnitEntry.COLUMN_UNIT_PRICE,
+                UnitEntry.COLUMN_UNIT_IMAGE_URI};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -167,5 +171,11 @@ public class InventoryActivity extends AppCompatActivity implements
     public void onLoaderReset(Loader<Cursor> loader) {
         // Callback called when the data needs to be deleted
         mCursorAdapter.swapCursor(null);
+    }
+
+    public void buyOne(long id, int quantity) {
+        mDbHelper.buyOne(id, quantity);
+        mCursorAdapter.swapCursor(mDbHelper.readStock());
+
     }
 }

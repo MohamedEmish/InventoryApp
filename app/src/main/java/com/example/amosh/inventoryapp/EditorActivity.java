@@ -10,6 +10,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -19,11 +20,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.amosh.inventoryapp.data.UnitContract.UnitEntry;
+import com.squareup.picasso.Picasso;
 
 public class EditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -53,6 +57,15 @@ public class EditorActivity extends AppCompatActivity implements
      */
     private EditText mPriceEditText;
 
+    private final static int PICK_IMAGE = 100;
+    Uri imageUri;
+    /**
+     * Button to add Image from Gallery
+     */
+    private Button mAddImageButton;
+    private String mImageUriString;
+
+    private ImageView mAddedImageView;
     /**
      * Boolean flag that keeps track of whether the unit has been edited (true) or not (false)
      */
@@ -104,6 +117,15 @@ public class EditorActivity extends AppCompatActivity implements
         mNameEditText = (EditText) findViewById(R.id.edit_supply_name);
         mQuantityEditText = (EditText) findViewById(R.id.edit_supply_quntity);
         mPriceEditText = (EditText) findViewById(R.id.edit_supply_price);
+        mAddImageButton = (Button) findViewById(R.id.add_image);
+        mAddedImageView = (ImageView) findViewById(R.id.added_image);
+        mAddImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGallery();
+            }
+        });
+
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -111,7 +133,23 @@ public class EditorActivity extends AppCompatActivity implements
         mNameEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
+        mAddedImageView.setOnTouchListener(mTouchListener);
 
+    }
+
+    private void openGallery() {
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        startActivityForResult(gallery, PICK_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
+            imageUri = data.getData();
+            Picasso.with(this).load(imageUri).into(mAddedImageView);
+            mImageUriString = imageUri.toString().trim();
+        }
     }
 
     /**
@@ -123,13 +161,14 @@ public class EditorActivity extends AppCompatActivity implements
         String nameString = mNameEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
+        String imageUriString = imageUri.toString().trim();
 
 
         // Check if this is supposed to be a new unit
         // and check if all the fields in the editor are blank
         if (mCurrentUnitUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(quantityString) &&
-                TextUtils.isEmpty(priceString)) {
+                TextUtils.isEmpty(priceString) && TextUtils.isEmpty(imageUriString)) {
             // Since no fields were modified, we can return early without creating a new unit.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
@@ -141,6 +180,7 @@ public class EditorActivity extends AppCompatActivity implements
         values.put(UnitEntry.COLUMN_UNIT_NAME, nameString);
         values.put(UnitEntry.COLUMN_UNIT_QUANTITY, quantityString);
         values.put(UnitEntry.COLUMN_UNIT_PRICE, priceString);
+        values.put(UnitEntry.COLUMN_UNIT_IMAGE_URI, imageUriString);
         /// Determine if this is a new or existing unit by checking if mCurrentUnitUri is null or not
         if (mCurrentUnitUri == null) {
             // This is a NEW unit, so insert a new unit into the provider,
@@ -287,7 +327,8 @@ public class EditorActivity extends AppCompatActivity implements
                 UnitEntry._ID,
                 UnitEntry.COLUMN_UNIT_NAME,
                 UnitEntry.COLUMN_UNIT_QUANTITY,
-                UnitEntry.COLUMN_UNIT_PRICE};
+                UnitEntry.COLUMN_UNIT_PRICE,
+                UnitEntry.COLUMN_UNIT_IMAGE_URI};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -312,16 +353,20 @@ public class EditorActivity extends AppCompatActivity implements
             int nameColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_NAME);
             int quantityColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_QUANTITY);
             int priceColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_PRICE);
+            int imageColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_IMAGE_URI);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             Double price = cursor.getDouble(priceColumnIndex);
+            String imageUriString = cursor.getString(imageColumnIndex).trim();
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mQuantityEditText.setText(Integer.toString(quantity));
             mPriceEditText.setText(Double.toString(price));
+            Uri imageUri = Uri.parse(imageUriString);
+            Picasso.with(this).load(imageUri).into(mAddedImageView);
 
         }
     }
@@ -332,6 +377,7 @@ public class EditorActivity extends AppCompatActivity implements
         mNameEditText.setText("");
         mQuantityEditText.setText("");
         mPriceEditText.setText("");
+        mAddedImageView.setImageURI(Uri.parse(""));
     }
 
     /**
