@@ -1,6 +1,8 @@
 package com.example.amosh.inventoryapp;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.Manifest;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
@@ -9,6 +11,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
@@ -27,7 +30,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.amosh.inventoryapp.data.UnitContract.UnitEntry;
-import com.squareup.picasso.Picasso;
+import com.example.amosh.inventoryapp.data.UnitDbHelper;
+
+import java.net.URI;
 
 public class EditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -36,6 +41,9 @@ public class EditorActivity extends AppCompatActivity implements
      * Identifier for the unit data loader
      */
     private static final int EXISTING_UNIT_LOADER = 0;
+
+    private static final int PICK_IMAGE_REQUEST = 0;
+
 
     /**
      * Content URI for the existing unit (null if it's a new unit)
@@ -94,6 +102,8 @@ public class EditorActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         mCurrentUnitUri = intent.getData();
 
+        UnitDbHelper dbHelper = new UnitDbHelper(this);
+
 
         // If the Intent DOES NOT contain a unit content URI, then we know that we are
         // creating a new unit.
@@ -133,22 +143,33 @@ public class EditorActivity extends AppCompatActivity implements
         mNameEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
-        mAddedImageView.setOnTouchListener(mTouchListener);
 
     }
 
     private void openGallery() {
-        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(gallery, PICK_IMAGE);
+        Intent intent;
+        if (Build.VERSION.SDK_INT < 19) {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        } else {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+        }
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
-            imageUri = data.getData();
-            Picasso.with(this).load(imageUri).into(mAddedImageView);
-            mImageUriString = imageUri.toString().trim();
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+
+            if (resultData != null) {
+                imageUri = resultData.getData();
+                mAddedImageView.setImageURI(imageUri);
+                mAddedImageView.invalidate();
+                mImageUriString = imageUri.toString();
+            }
+
         }
     }
 
@@ -161,7 +182,7 @@ public class EditorActivity extends AppCompatActivity implements
         String nameString = mNameEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
-        String imageUriString = imageUri.toString().trim();
+        String imageUriString = mImageUriString;
 
 
         // Check if this is supposed to be a new unit
@@ -359,14 +380,14 @@ public class EditorActivity extends AppCompatActivity implements
             String name = cursor.getString(nameColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             Double price = cursor.getDouble(priceColumnIndex);
-            String imageUriString = cursor.getString(imageColumnIndex).trim();
+            String imageUriString = cursor.getString(imageColumnIndex);
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mQuantityEditText.setText(Integer.toString(quantity));
             mPriceEditText.setText(Double.toString(price));
             Uri imageUri = Uri.parse(imageUriString);
-            Picasso.with(this).load(imageUri).into(mAddedImageView);
+            mAddedImageView.setImageURI(imageUri);
 
         }
     }

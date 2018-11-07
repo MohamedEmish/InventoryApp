@@ -7,7 +7,6 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,17 +16,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.amosh.inventoryapp.data.UnitContract;
 import com.example.amosh.inventoryapp.data.UnitContract.UnitEntry;
 import com.example.amosh.inventoryapp.data.UnitDbHelper;
-import com.example.amosh.inventoryapp.data.UnitProvider;
-import com.example.amosh.inventoryapp.EditorActivity;
-
 
 
 public class InventoryActivity extends AppCompatActivity implements
@@ -44,6 +36,8 @@ public class InventoryActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory);
+
+        mDbHelper = new UnitDbHelper(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +57,8 @@ public class InventoryActivity extends AppCompatActivity implements
 
         // Setup an Adapter to create a list item for each row of unit data in the Cursor.
         // There is no unit data yet (until the loader finishes) so pass in null for the Cursor.
-        mCursorAdapter = new UnitCursorAdapter(this, null);
+        Cursor cursor = mDbHelper.readStock();
+        mCursorAdapter = new UnitCursorAdapter(this, cursor);
         unitListView.setAdapter(mCursorAdapter);
 
         // Setup the item click listener
@@ -101,7 +96,7 @@ public class InventoryActivity extends AppCompatActivity implements
         values.put(UnitEntry.COLUMN_UNIT_NAME, "Cheese");
         values.put(UnitEntry.COLUMN_UNIT_QUANTITY, 5);
         values.put(UnitEntry.COLUMN_UNIT_PRICE, 7);
-        values.put(UnitEntry.COLUMN_UNIT_IMAGE_URI, R.drawable.shopping_empty_box_icon);
+        values.put(UnitEntry.COLUMN_UNIT_IMAGE_URI, "android.resource://com.example.amosh.inventoryapp/drawable/shopping_empty_box_icon");
 
         // Insert a new row for Cheese into the provider using the ContentResolver.
         // Use the {@link UnitEntry#CONTENT_URI} to indicate that we want to insert

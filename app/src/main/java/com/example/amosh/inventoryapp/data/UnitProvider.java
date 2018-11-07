@@ -216,14 +216,14 @@ public class UnitProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case UNITS:
-                return updateunit(uri, contentValues, selection, selectionArgs);
+                return updateUnit(uri, contentValues, selection, selectionArgs);
             case UNIT_ID:
                 // For the UNIT_ID code, extract out the ID from the URI,
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = UnitEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return updateunit(uri, contentValues, selection, selectionArgs);
+                return updateUnit(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
         }
@@ -234,7 +234,7 @@ public class UnitProvider extends ContentProvider {
      * specified in the selection and selection arguments (which could be 0 or 1 or more units).
      * Return the number of rows that were successfully updated.
      */
-    private int updateunit(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    private int updateUnit(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         // If the {@link unitEntry#COLUMN_UNIT_NAME} key is present,
         // check that the name value is not null.
         if (values.containsKey(UnitEntry.COLUMN_UNIT_NAME)) {
