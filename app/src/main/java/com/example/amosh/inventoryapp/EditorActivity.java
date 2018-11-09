@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -124,11 +125,11 @@ public class EditorActivity extends AppCompatActivity implements
         }
 
         // Find all relevant views that we will need to read user input from
-        mNameEditText = (EditText) findViewById(R.id.edit_supply_name);
-        mQuantityEditText = (EditText) findViewById(R.id.edit_supply_quntity);
-        mPriceEditText = (EditText) findViewById(R.id.edit_supply_price);
-        mAddImageButton = (Button) findViewById(R.id.add_image);
-        mAddedImageView = (ImageView) findViewById(R.id.added_image);
+        mNameEditText = findViewById(R.id.edit_supply_name);
+        mQuantityEditText = findViewById(R.id.edit_supply_quntity);
+        mPriceEditText = findViewById(R.id.edit_supply_price);
+        mAddImageButton = findViewById(R.id.add_image);
+        mAddedImageView = findViewById(R.id.added_image);
         mAddImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -143,6 +144,7 @@ public class EditorActivity extends AppCompatActivity implements
         mNameEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
+        mAddedImageView.setOnTouchListener(mTouchListener);
 
     }
 
@@ -374,20 +376,18 @@ public class EditorActivity extends AppCompatActivity implements
             int nameColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_NAME);
             int quantityColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_QUANTITY);
             int priceColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_PRICE);
-            int imageColumnIndex = cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_IMAGE_URI);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             Double price = cursor.getDouble(priceColumnIndex);
-            String imageUriString = cursor.getString(imageColumnIndex);
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mQuantityEditText.setText(Integer.toString(quantity));
             mPriceEditText.setText(Double.toString(price));
-            Uri imageUri = Uri.parse(imageUriString);
-            mAddedImageView.setImageURI(imageUri);
+
+            mAddedImageView.setImageURI(Uri.parse(cursor.getString(cursor.getColumnIndex(UnitEntry.COLUMN_UNIT_IMAGE_URI))));
 
         }
     }
@@ -441,7 +441,7 @@ public class EditorActivity extends AppCompatActivity implements
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the unit.
-                deleteunit();
+                deleteUnit();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -462,7 +462,7 @@ public class EditorActivity extends AppCompatActivity implements
     /**
      * Perform the deletion of the unit in the database.
      */
-    private void deleteunit() {
+    private void deleteUnit() {
         // Only perform the delete if this is an existing unit.
         if (mCurrentUnitUri != null) {
             // Call the ContentResolver to delete the unit at the given content URI.
