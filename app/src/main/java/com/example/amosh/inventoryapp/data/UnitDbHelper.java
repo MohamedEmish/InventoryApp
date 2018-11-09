@@ -1,12 +1,10 @@
 package com.example.amosh.inventoryapp.data;
 
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
 
 import com.example.amosh.inventoryapp.data.UnitContract.UnitEntry;
 
